@@ -1,0 +1,4 @@
+.product-form__grid { margin-top: 4px; }
+.product-form__wide { grid-column: 1 / -1; }
+.product-form__wide textarea { min-height: 96px; }
+.product-form__footer { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); }

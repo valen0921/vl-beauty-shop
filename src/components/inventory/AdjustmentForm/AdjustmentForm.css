@@ -1,0 +1,5 @@
+.adjustment__result { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding: 14px 16px; border-radius: var(--radius-sm); background: var(--surface-soft); font-size: 12px; }
+.adjustment__result span { font-weight: 500; color: var(--text-soft); }
+.adjustment__result strong { font-size: 16px; font-weight: 600; }
+.adjustment__actions { margin: 16px 0 6px; }
+.adjustment__actions + .callout svg { color: var(--pink); }

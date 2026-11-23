@@ -1,0 +1,7 @@
+.pagination { display: flex; align-items: center; gap: 4px; }
+.pagination__btn { min-width: 28px; height: 28px; padding: 0 6px; display: inline-flex; align-items: center; justify-content: center; background: none; border: 0; border-radius: 8px; font-size: 12px; color: var(--text); cursor: pointer; }
+.pagination__btn:hover { background: var(--pink-soft); }
+.pagination__btn.is-active { background: #f9dce3; color: var(--pink-text); }
+.pagination__gap { padding: 0 4px; color: var(--muted); }
+.pagination__btn:disabled { opacity: .4; cursor: not-allowed; }
+.pagination__btn:disabled:hover { background: none; }

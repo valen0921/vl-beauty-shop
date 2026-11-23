@@ -1,0 +1,30 @@
+:root {
+  --bg: #fdf2f2;
+  --surface: #fcecec;
+  --surface-soft: #faf5f5;
+  --border: #f6d8dc;
+  --input-bg: #fcefef;
+
+  --pink: #ff6b9a;
+  --pink-dark: #f0457c;
+  --pink-soft: #ffe4ec;
+  --pink-text: #f2547f;
+
+  --text: #2b2527;
+  --text-soft: #6f6466;
+  --muted: #8c8184;
+
+  --green: #3f7d58;
+  --green-soft: #e1f0e6;
+  --amber: #9a6b2f;
+  --amber-soft: #f6ead2;
+  --amber-bg: #f8eedd;
+  --brown: #a5763a;
+  --danger: #c2445f;
+
+  --radius: 14px;
+  --radius-sm: 10px;
+
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+}

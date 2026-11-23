@@ -1,0 +1,27 @@
+/* Rejillas compartidas por las 5 pantallas */
+.stat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.rules-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.layout-main-side {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--side, 318px);
+  gap: 20px;
+  align-items: start;
+}
+.layout-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.form-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.form-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.form-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.form-actions { display: flex; gap: 10px; align-items: center; }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+.toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.toolbar__spacer { margin-left: auto; }
+.card-pad { padding: 20px; }
+
+@media (max-width: 1024px) {
+  .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rules-grid, .layout-main-side, .layout-two { grid-template-columns: minmax(0, 1fr); }
+  .form-grid, .form-grid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .stat-grid, .form-grid, .form-grid--2, .form-grid--3 { grid-template-columns: minmax(0, 1fr); }
+}

@@ -1,0 +1,2 @@
+.supplier-form { display: flex; flex-direction: column; gap: 16px; padding: 20px; border-radius: var(--radius); background: #fbf2f2; border: 1px solid var(--border); }
+.supplier-form h4 { font-size: 15px; font-weight: 600; }

@@ -1,0 +1,4 @@
+.report-filters { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; padding: 16px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+.report-filters__group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.report-filters__icon { color: var(--pink); }
+.report-filters__compare { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text-soft); }

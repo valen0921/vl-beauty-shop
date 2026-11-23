@@ -1,0 +1,6 @@
+.sync-banner { display: flex; align-items: center; gap: 18px; padding: 22px 24px; border-radius: var(--radius); background: var(--pink); color: #fff; }
+.sync-banner__icon { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; background: rgba(255, 255, 255, .28); flex-shrink: 0; }
+.sync-banner__text h2 { font: 500 28px/1.2 var(--font-serif); }
+.sync-banner__text p { margin-top: 2px; font-size: 13px; opacity: .88; }
+.sync-banner__aside { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; font-size: 12px; opacity: .95; text-align: right; }
+@media (max-width: 720px) { .sync-banner { flex-wrap: wrap; } .sync-banner__aside { margin-left: 0; align-items: flex-start; text-align: left; } }

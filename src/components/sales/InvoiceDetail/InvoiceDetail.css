@@ -1,0 +1,22 @@
+.invoice { display: flex; flex-direction: column; gap: 6px; }
+.invoice hr { width: 100%; margin: 14px 0; border: 0; border-top: 1px solid var(--border); }
+.invoice__brand { display: flex; justify-content: space-between; align-items: center; }
+.invoice__brand img { height: 40px; width: auto; }
+.invoice__number { margin-top: 10px; font-size: 22px; font-weight: 600; }
+.invoice__meta { font-size: 11.5px; line-height: 1.5; color: var(--text-soft); }
+.invoice__label { display: block; margin-bottom: 4px; font-size: 10.5px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.invoice__client { display: flex; justify-content: space-between; }
+.invoice__client strong { font-size: 14px; }
+.invoice__client p { font-size: 11.5px; color: var(--text-soft); }
+.invoice__lines-head { display: flex; justify-content: space-between; }
+.invoice__lines { display: flex; flex-direction: column; gap: 12px; }
+.invoice__lines li { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; }
+.invoice__lines strong { display: block; font-weight: 500; }
+.invoice__lines small { font-size: 11px; color: var(--muted); }
+.invoice__totals { display: flex; flex-direction: column; gap: 6px; }
+.invoice__totals > div { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--text-soft); }
+.invoice__totals .invoice__total { align-items: center; margin-top: 8px; color: var(--text); }
+.invoice__total dt { font-size: 15px; font-weight: 600; }
+.invoice__total dd { font-size: 28px; font-weight: 500; color: var(--pink); }
+.invoice__pay { display: flex; align-items: center; gap: 8px; margin: 8px 0; font-size: 11.5px; color: var(--text-soft); }
+.invoice .form-actions { margin-top: 10px; }

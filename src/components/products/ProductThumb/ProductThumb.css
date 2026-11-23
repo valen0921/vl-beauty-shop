@@ -1,0 +1,2 @@
+.thumb { width: 42px; height: 42px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: #ead3cb; }
+.thumb--empty { display: inline-grid; place-items: center; width: 42px; height: 42px; flex-shrink: 0; background: var(--pink-soft); color: var(--pink-text); font-weight: 600; font-size: 16px; }

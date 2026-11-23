@@ -1,0 +1,6 @@
+.categories { display: flex; flex-direction: column; gap: 14px; }
+.categories__row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; }
+.categories__name { display: inline-flex; align-items: center; gap: 8px; }
+.categories__name i { width: 7px; height: 7px; border-radius: 50%; }
+.categories__pct { display: block; margin-top: 4px; text-align: right; font-size: 11px; color: var(--muted); }
+.categories__total { margin-top: 16px; font-size: 11px; color: var(--text-soft); }

@@ -1,0 +1,3 @@
+.chips { display: flex; gap: 8px; }
+.chips__chip { height: 38px; padding: 0 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--input-bg); color: var(--text); font-size: 13px; font-weight: 500; cursor: pointer; }
+.chips__chip.is-active { background: var(--pink); border-color: var(--pink); color: #fff; }

@@ -1,0 +1,8 @@
+.new-sale__add { margin-top: 16px; }
+.new-sale__note { margin-top: 16px; padding: 14px 16px; border-radius: var(--radius-sm); background: #f9e6e8; }
+.new-sale__note strong { display: block; margin-bottom: 4px; font-size: 11px; font-weight: 500; color: var(--pink-text); }
+.new-sale__note p { font-size: 12.5px; color: var(--text-soft); }
+.new-sale__note textarea { width: 100%; resize: vertical; border: 0; background: transparent; font: inherit; font-size: 12.5px; color: var(--text); }
+.new-sale__note textarea::placeholder { color: var(--text-soft); }
+.new-sale__note textarea:focus { outline: 0; }
+.new-sale__hint { margin-top: 12px; font-size: 12.5px; color: var(--amber); }

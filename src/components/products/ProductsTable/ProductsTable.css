@@ -1,0 +1,6 @@
+.products-table__head { display: flex; flex-direction: column; gap: 18px; padding: 0 20px 18px; }
+.products-table__head .tabs { padding-top: 4px; }
+.product-cell { display: flex; align-items: center; gap: 14px; }
+.stock-cell { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; }
+.bulk { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 14px; border-radius: var(--radius-sm); background: var(--pink-soft); font-size: 13px; }
+.bulk strong { margin-right: 4px; color: var(--pink-text); }

@@ -1,0 +1,10 @@
+.stat { display: flex; flex-direction: column; gap: 8px; padding: 18px 20px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+.stat__top { display: flex; justify-content: space-between; align-items: center; }
+.stat__label { font-size: 13px; color: var(--text-soft); }
+.stat__icon { color: var(--pink); }
+.stat__value { font-size: 30px; font-weight: 500; line-height: 1.15; letter-spacing: -.01em; }
+.stat__hint { font-size: 12px; }
+.stat__hint--muted { color: var(--text-soft); }
+.stat__hint--pink { color: var(--pink-text); }
+.stat__hint--green { color: var(--green); }
+.stat__hint--amber { color: var(--amber); }

@@ -1,0 +1,14 @@
+.table-wrap { overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table th { padding: 12px 16px; background: var(--surface-soft); color: var(--muted); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; text-align: left; white-space: nowrap; }
+.table td { padding: 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.table th:first-child, .table td:first-child { padding-left: 20px; }
+.table th:last-child, .table td:last-child { padding-right: 20px; }
+.table tbody tr:last-child td { border-bottom: 0; }
+.table tbody tr.is-clickable { cursor: pointer; }
+.table tbody tr.is-clickable:hover { background: #fbe6e9; }
+.table tbody tr.is-selected { background: #fadfe5; }
+.table tbody tr.is-selected td:first-child { box-shadow: inset 3px 0 0 var(--pink); }
+.table .t-right { text-align: right; }
+.table .t-center { text-align: center; }
+.table__empty { text-align: center; color: var(--muted); padding: 32px; }

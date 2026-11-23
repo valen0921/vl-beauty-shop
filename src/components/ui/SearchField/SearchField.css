@@ -1,0 +1,4 @@
+.search { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 14px; min-width: 220px; flex: 1; max-width: 350px; background: var(--input-bg); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--muted); }
+.search:focus-within { border-color: var(--pink); }
+.search input { flex: 1; min-width: 0; border: 0; background: none; outline: 0; font-size: 14px; color: var(--text); }
+.search input::placeholder { color: var(--muted); }

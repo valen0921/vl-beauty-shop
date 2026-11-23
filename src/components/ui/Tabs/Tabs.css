@@ -1,0 +1,5 @@
+.tabs { display: flex; gap: 28px; border-bottom: 1px solid var(--border); overflow-x: auto; }
+.tabs__tab { position: relative; padding: 14px 0; background: none; border: 0; font-size: 14px; color: var(--text-soft); cursor: pointer; white-space: nowrap; }
+.tabs__tab.is-active { color: var(--pink-text); font-weight: 500; }
+.tabs__tab.is-active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--pink); }
+.tabs__count { margin-left: 6px; font-size: 13px; }

@@ -1,0 +1,9 @@
+.callout { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: var(--radius-sm); font-size: 13px; }
+.callout--plain { padding-left: 0; padding-right: 0; color: var(--text-soft); }
+.callout--plain svg { color: var(--green); }
+.callout--success { background: #e5f1e9; color: var(--green); }
+.callout--neutral { background: #f3eded; color: var(--text-soft); }
+.callout--warning { background: var(--amber-bg); color: var(--amber); }
+.callout--stacked { flex-direction: column; align-items: flex-start; gap: 6px; padding: 18px 20px; border-radius: var(--radius); }
+.callout__title { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.callout__text { font-size: 12.5px; line-height: 1.5; }
