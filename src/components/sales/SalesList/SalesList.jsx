@@ -8,10 +8,10 @@ import TableFooter from '@/components/ui/TableFooter/TableFooter'
 import Pagination from '@/components/ui/Pagination/Pagination'
 import Badge from '@/components/ui/Badge/Badge'
 import { formatCOP } from '@/utils/format'
-import { TODAY, YESTERDAY } from '@/config'
+import { TODAY, TODAY_SHORT, YESTERDAY, YESTERDAY_SHORT } from '@/config'
 
 const STATUS_TONE = { Pagada: 'success', Pendiente: 'warning', Anulada: 'neutral' }
-const DAYS = [{ value: TODAY, label: 'Hoy, 22 oct' }, { value: YESTERDAY, label: 'Ayer, 21 oct' }]
+const DAYS = [{ value: TODAY, label: `Hoy, ${TODAY_SHORT}` }, { value: YESTERDAY, label: `Ayer, ${YESTERDAY_SHORT}` }]
 const ANY_METHOD = 'Método de pago'
 const PAGE_SIZE = 6
 

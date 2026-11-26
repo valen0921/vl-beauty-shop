@@ -5,7 +5,6 @@ import { products as seedProducts } from '@/data/products'
 import { invoices as seedInvoicesRaw } from '@/data/sales'
 import { movements as seedMovements, purchaseLines, suppliers as seedSuppliers } from '@/data/inventory'
 import { operations as seedOperations } from '@/data/stock'
-import { reportHistory, periodToday } from '@/data/reports'
 
 export const STORAGE_KEY = 'vl-beauty-shop:v1'
 
@@ -52,7 +51,7 @@ export function createInitialState() {
     movements: seedMovements.map((m) => ({ ...m })),
     operations: seedOperations.map((o) => ({ ...o, day: 'hoy' })),
     suppliers: seedSuppliers.map((s) => ({ ...s, history: s.history.map((h) => ({ ...h })) })),
-    reports: reportHistory.map((r) => ({ ...r, period: periodToday })),
+    reports: [],
     purchaseDraft: newPurchaseDraft(18, seedSuppliers[0].id, purchaseLines.map((l) => ({ ...l })), 'FP-2026-1042'),
     settings: { autoSync: true, rules: { venta: true, devolucion: true, entrada: true } },
     pending: [],
@@ -307,7 +306,7 @@ export function confirmPurchase(state, draft) {
   }
   const amount = lines.reduce((s, l) => s + l.qty * l.cost, 0)
   const date = (draft.date || '').trim() || TODAY
-  const entry = { id: uid('h'), date, purchase: draft.id, invoice, amount }
+  const entry = { id: uid('h'), date, purchase: draft.id, invoice, amount, lines: lines.map((l) => ({ id: l.id, qty: l.qty, cost: l.cost })) }
   const n = state.counters.purchase + 1
   const base = {
     ...state,

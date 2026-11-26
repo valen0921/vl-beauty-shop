@@ -1,10 +1,11 @@
+import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import Icon from '@/components/ui/Icon/Icon'
 import Popover from '@/components/ui/Popover/Popover'
 import { useUI } from '@/components/ui/Feedback/UIProvider'
 import { useStore } from '@/store/StoreProvider'
 import { buildAlerts } from '@/store/selectors'
-import { STORE_NAME } from '@/config'
+import { STORE_NAME, TODAY } from '@/config'
 import logo from '@/assets/logo.svg'
 import { navItems } from '@/data/navigation'
 import './Navbar.css'
@@ -14,7 +15,11 @@ export default function Navbar() {
   const navigate = useNavigate()
   const { state, markAlertsSeen, resetDemo } = useStore()
   const { confirm, toast } = useUI()
+  const [menuOpen, setMenuOpen] = useState(false)
   const current = navItems.find((item) => item.to === pathname)
+
+  // Cierra el menú móvil al cambiar de página.
+  useEffect(() => { setMenuOpen(false) }, [pathname])
 
   const alerts = buildAlerts(state)
   const alertsKey = alerts.map((a) => a.id).join('|')
@@ -64,7 +69,7 @@ export default function Navbar() {
                 </div>
               )}
             </Popover>
-            <span className="navbar__date">22 oct 2026</span>
+            <span className="navbar__date">{TODAY}</span>
             <Popover
               width={340}
               trigger={({ ref, open, toggle }) => (
@@ -103,16 +108,27 @@ export default function Navbar() {
           <Link to="/productos" className="navbar__logo" aria-label="V&L Beauty Shop">
             <img src={logo} alt="V&L Beauty Shop" />
           </Link>
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) => `navbar__link ${isActive ? 'is-active' : ''}`}
-            >
-              <Icon name={item.icon} size={15} />
-              {item.label}
-            </NavLink>
-          ))}
+          <button
+            type="button"
+            className="navbar__burger"
+            aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((v) => !v)}
+          >
+            <Icon name={menuOpen ? 'close' : 'menu'} size={20} />
+          </button>
+          <div className={`navbar__links ${menuOpen ? 'is-open' : ''}`}>
+            {navItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) => `navbar__link ${isActive ? 'is-active' : ''}`}
+              >
+                <Icon name={item.icon} size={15} />
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
         </nav>
       </div>
     </header>

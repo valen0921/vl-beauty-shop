@@ -3,7 +3,7 @@ import {
   ShoppingBag, Undo2, PackageCheck, Boxes, Receipt, CheckCircle2, AlertTriangle, AlertCircle,
   Search, Download, Upload, Plus, Minus, MoreHorizontal, TrendingUp, Wallet, Printer,
   ArrowUpRight, ArrowRight, User, CalendarDays, Package, Layers, SquarePen, Clock, X, Zap,
-  PackageX, CreditCard, Copy, Mail, Trash2, Archive, ArchiveRestore, Check, Eye, FileText, Ban,
+  PackageX, CreditCard, Copy, Mail, Trash2, Archive, ArchiveRestore, Check, Eye, FileText, Ban, Menu,
 } from 'lucide-react'
 
 const icons = {
@@ -15,7 +15,7 @@ const icons = {
   arrowUpRight: ArrowUpRight, arrowRight: ArrowRight, user: User, calendar: CalendarDays,
   package: Package, layers: Layers, edit: SquarePen, clock: Clock, close: X, zap: Zap,
   packageX: PackageX, creditCard: CreditCard, copy: Copy, mail: Mail, trash: Trash2, archive: Archive,
-  unarchive: ArchiveRestore, check: Check, eye: Eye, file: FileText, ban: Ban,
+  unarchive: ArchiveRestore, check: Check, eye: Eye, file: FileText, ban: Ban, menu: Menu,
 }
 
 export default function Icon({ name, size = 16, className, ...props }) {

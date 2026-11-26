@@ -1,21 +1,65 @@
-// Cifras derivadas del estado. Las pantallas muestran "toda la tienda" (base de ejemplo) más lo que
-// cambia en esta sesión: cada venta, compra o ajuste se suma o resta sobre esa base.
-import { TODAY } from '@/config'
+// Cifras derivadas del estado. Todo se calcula a partir de los registros reales
+// (facturas y productos guardados en la base de datos) — no hay cifras de ejemplo.
+import { TODAY, YESTERDAY } from '@/config'
 import { formatCOP, formatNumber } from '@/utils/format'
 import { stockStatus } from '@/utils/inventory'
-import { hourlySales, categorySales, topProducts, todayBase, yesterdayRef, pastPeriods, periodToday } from '@/data/reports'
-import { SEED_INVOICES, SEED_PRODUCTS } from './logic'
+import { CATEGORY_COLORS, periodToday, periodYesterday, periodWeek } from '@/data/reports'
+import { SEED_PRODUCTS, nowHM } from './logic'
 
 const pad2 = (n) => String(n).padStart(2, '0')
 const sum = (arr, fn) => arr.reduce((s, x) => s + fn(x), 0)
 export const plural = (n, one, many) => (n === 1 ? one : many)
+
+/* ───────────── Fechas ───────────── */
+
+const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+const MESES_LARGO = { ene: 'enero', feb: 'febrero', mar: 'marzo', abr: 'abril', may: 'mayo', jun: 'junio', jul: 'julio', ago: 'agosto', sep: 'septiembre', oct: 'octubre', nov: 'noviembre', dic: 'diciembre' }
+
+function parseDay(str) {
+  if (!str) return null
+  const [d, mon, y] = str.split(' ')
+  const mi = MESES.indexOf(mon)
+  if (mi < 0 || !d || !y) return null
+  return new Date(Number(y), mi, Number(d))
+}
+function longDate(str) {
+  const [d, mon, y] = (str || '').split(' ')
+  return mon && MESES_LARGO[mon] ? `${d} de ${MESES_LARGO[mon]} de ${y}` : str
+}
+function startOfToday() {
+  const d = new Date()
+  d.setHours(0, 0, 0, 0)
+  return d
+}
+function addDays(date, n) {
+  const d = new Date(date)
+  d.setDate(d.getDate() + n)
+  return d
+}
+function inRange(invoice, from, to) {
+  const d = parseDay(invoice.day)
+  return d && d >= from && d <= to
+}
+
+// Para cada periodo del selector de reportes, devuelve el rango de fechas a mostrar
+// y el rango anterior equivalente (para calcular el "% frente a ...").
+function periodRange(period) {
+  const start = startOfToday()
+  if (period === periodYesterday) {
+    const y = addDays(start, -1)
+    return { from: y, to: y, prevFrom: addDays(start, -2), prevTo: addDays(start, -2), tag: 'Ayer', vsLabel: 'frente al día anterior' }
+  }
+  if (period === periodWeek) {
+    return { from: addDays(start, -6), to: start, prevFrom: addDays(start, -13), prevTo: addDays(start, -7), tag: '7 días', vsLabel: 'frente a la semana anterior' }
+  }
+  return { from: start, to: start, prevFrom: addDays(start, -1), prevTo: addDays(start, -1), tag: 'Hoy', vsLabel: 'frente a ayer' }
+}
 
 /* ───────────── Ventas ───────────── */
 
 export function invoiceMetrics(invoices) {
   const m = { count: 0, total: 0, paidCount: 0, pending: 0, pendingCount: 0, annulled: 0, card: 0, cash: 0, transfer: 0 }
   for (const i of invoices) {
-    if (i.day !== TODAY) continue
     if (i.status === 'Anulada') { m.annulled++; continue }
     m.count++
     m.total += i.total
@@ -31,40 +75,33 @@ export function invoiceMetrics(invoices) {
   }
   return m
 }
-const SEED_METRICS = invoiceMetrics(SEED_INVOICES)
-
-export function salesSummary(state) {
-  const cur = invoiceMetrics(state.invoices)
-  const d = (k) => cur[k] - SEED_METRICS[k]
-  const b = todayBase
-  const total = b.total + d('total')
-  const count = b.count + d('count')
-  const pending = b.pending + d('pending')
-  return {
-    total, count, pending,
-    paidCount: b.paidCount + d('paidCount'),
-    pendingCount: b.pendingCount + d('pendingCount'),
-    paid: total - pending,
-    card: b.card + d('card'),
-    cash: b.cash + d('cash'),
-    transfer: b.transfer + d('transfer'),
-    avg: count ? Math.round(total / count) : 0,
-    annulled: cur.annulled,
-  }
-}
 
 const fmtPct = (p, label) => `${p >= 0 ? '↑' : '↓'} ${Math.abs(p).toFixed(1).replace('.', ',')} % ${label}`
 const pctTone = (p) => (p >= 0 ? 'green' : 'amber')
+const pctChange = (curr, prev) => (prev ? (curr / prev - 1) * 100 : curr > 0 ? 100 : 0)
 
-function todayDeltas(summary) {
+export function salesSummary(state) {
+  const todays = state.invoices.filter((i) => i.day === TODAY)
+  const yesterdays = state.invoices.filter((i) => i.day === YESTERDAY)
+  const m = invoiceMetrics(todays)
+  const y = invoiceMetrics(yesterdays)
+  const avg = m.count ? Math.round(m.total / m.count) : 0
+  const yAvg = y.count ? Math.round(y.total / y.count) : 0
   return {
-    totalPct: (summary.total / yesterdayRef.total - 1) * 100,
-    avgPct: yesterdayRef.avg ? (summary.avg / yesterdayRef.avg - 1) * 100 : 0,
+    total: m.total, count: m.count, avg,
+    pending: m.pending,
+    paidCount: m.paidCount,
+    pendingCount: m.pendingCount,
+    paid: m.total - m.pending,
+    card: m.card, cash: m.cash, transfer: m.transfer,
+    annulled: m.annulled,
+    totalPct: pctChange(m.total, y.total),
+    avgPct: pctChange(avg, yAvg),
   }
 }
 
 export function salesStats(summary) {
-  const { totalPct, avgPct } = todayDeltas(summary)
+  const { totalPct, avgPct } = summary
   return [
     { label: 'Ventas de hoy', value: formatCOP(summary.total), hint: fmtPct(totalPct, 'frente a ayer'), tone: pctTone(totalPct), icon: 'trendUp' },
     { label: 'Ventas registradas', value: String(summary.count), hint: `${summary.paidCount} pagadas · ${summary.pendingCount} pendientes`, tone: 'muted', icon: 'bag' },
@@ -90,76 +127,59 @@ const catName = (c) => (MAIN_CATEGORIES.includes(c) ? c : 'Otras categorías')
 function accumulate(invoices, fn) {
   const out = new Map()
   const add = (k, v) => out.set(k, (out.get(k) || 0) + v)
-  for (const i of invoices) if (i.day === TODAY && i.status !== 'Anulada') fn(i, add)
-  return out
-}
-function withDelta(base, cur, seed) {
-  const out = new Map(base)
-  cur.forEach((v, k) => out.set(k, (out.get(k) || 0) + v))
-  seed.forEach((v, k) => out.set(k, (out.get(k) || 0) - v))
+  for (const i of invoices) fn(i, add)
   return out
 }
 
 export function reportView(state, { period, compare = true, category = 'Todas las categorías' }) {
   const cat = category && category !== 'Todas las categorías' ? category : null
-  const live = period === periodToday
-  const past = pastPeriods[period]
+  const { from, to, prevFrom, prevTo, tag, vsLabel } = periodRange(period)
 
-  // Metadatos para nombrar productos (catálogo actual > base > facturas).
+  const invoicesInPeriod = state.invoices.filter((i) => i.status !== 'Anulada' && inRange(i, from, to))
+  const invoicesPrevPeriod = state.invoices.filter((i) => i.status !== 'Anulada' && inRange(i, prevFrom, prevTo))
+
+  const m = invoiceMetrics(invoicesInPeriod)
+  const mPrev = invoiceMetrics(invoicesPrevPeriod)
+  const avg = m.count ? Math.round(m.total / m.count) : 0
+  const avgPrev = mPrev.count ? Math.round(mPrev.total / mPrev.count) : 0
+  const summary = {
+    total: m.total, count: m.count, avg,
+    paidCount: m.paidCount, pendingCount: m.pendingCount,
+    pending: m.pending, paid: m.total - m.pending,
+    card: m.card, cash: m.cash, transfer: m.transfer,
+  }
+  const totalPct = pctChange(m.total, mPrev.total)
+  const avgPct = pctChange(avg, avgPrev)
+
+  const hourlySubtitle =
+    period === periodYesterday ? `${longDate(YESTERDAY)} · Día completo`
+    : period === periodWeek ? 'Últimos 7 días · Total por franja horaria'
+    : `${longDate(TODAY)} · Acumulado hasta las ${nowHM()}`
+
+  // Metadatos para nombrar productos (catálogo actual + lo que ya aparece en facturas).
   const meta = new Map()
   state.invoices.forEach((i) => i.items.forEach((it) => meta.set(it.id, { name: it.name, category: it.category })))
-  topProducts.forEach((t) => meta.set(t.id, { name: t.name, category: t.category }))
   state.products.forEach((p) => meta.set(p.id, { name: p.name, category: p.category }))
 
-  let summary, hourly, categoryAmounts, topRows, tag, hourlySubtitle, vsLabel, totalPct, avgPct
+  const hourMap = accumulate(invoicesInPeriod, (i, add) => add(`${i.hour.slice(0, 2)} h`, i.total))
+  const hourly = [...hourMap.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([hour, amount]) => ({ hour, amount }))
 
-  if (live) {
-    summary = salesSummary(state)
-    ;({ totalPct, avgPct } = todayDeltas(summary))
-    tag = 'Hoy'
-    hourlySubtitle = '22 de octubre · Acumulado hasta las 14:32'
-    vsLabel = 'frente a ayer'
-
-    const baseHours = new Map(hourlySales.map((h) => [h.hour, h.amount]))
-    const hours = withDelta(
-      baseHours,
-      accumulate(state.invoices, (i, add) => add(`${i.hour.slice(0, 2)} h`, i.total)),
-      accumulate(SEED_INVOICES, (i, add) => add(`${i.hour.slice(0, 2)} h`, i.total)),
-    )
-    hourly = [...hours.entries()]
-      .filter(([h, v]) => v > 0 || baseHours.has(h))
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([hour, amount]) => ({ hour, amount: Math.max(0, amount) }))
-
-    const byCat = (invoices) => accumulate(invoices, (i, add) => i.items.forEach((it) => add(catName(it.category), it.unit * it.qty)))
-    categoryAmounts = withDelta(new Map(categorySales.map((c) => [c.name, c.amount])), byCat(state.invoices), byCat(SEED_INVOICES))
-
-    const units = (invoices) => accumulate(invoices, (i, add) => i.items.forEach((it) => add(it.id, it.qty)))
-    const sales = (invoices) => accumulate(invoices, (i, add) => i.items.forEach((it) => add(it.id, it.unit * it.qty)))
-    const u = withDelta(new Map(topProducts.map((t) => [t.id, t.units])), units(state.invoices), units(SEED_INVOICES))
-    const s = withDelta(new Map(topProducts.map((t) => [t.id, t.sales])), sales(state.invoices), sales(SEED_INVOICES))
-    topRows = [...u.keys()].map((id) => ({ id, units: u.get(id), sales: s.get(id) || 0 }))
-  } else {
-    summary = { ...past.summary, paid: past.summary.total - past.summary.pending, avg: Math.round(past.summary.total / past.summary.count) }
-    ;({ totalPct, avgPct, tag, hourlySubtitle, vsLabel } = past)
-    hourly = past.hourly
-    categoryAmounts = new Map(Object.entries(past.categories))
-    topRows = past.top
-  }
-
+  const categoryAmounts = accumulate(invoicesInPeriod, (i, add) => i.items.forEach((it) => add(catName(it.category), it.unit * it.qty)))
   const catTotal = sum([...categoryAmounts.values()], (v) => Math.max(0, v))
-  const categories = categorySales
+  const categories = CATEGORY_COLORS
     .map((c) => {
       const amount = Math.max(0, categoryAmounts.get(c.name) || 0)
       return { name: c.name, color: c.color, amount, percent: catTotal ? Math.round((amount / catTotal) * 1000) / 10 : 0 }
     })
     .filter((c) => !cat || c.name === cat)
 
-  const top = topRows
-    .filter((t) => t.units > 0 && meta.has(t.id))
-    .map((t) => {
-      const p = state.products.find((x) => x.id === t.id)
-      return { id: t.id, name: meta.get(t.id).name, category: meta.get(t.id).category, units: t.units, sales: t.sales, stock: p ? p.stock : 0, low: p ? p.stock < p.min : false }
+  const unitsMap = accumulate(invoicesInPeriod, (i, add) => i.items.forEach((it) => add(it.id, it.qty)))
+  const salesMap = accumulate(invoicesInPeriod, (i, add) => i.items.forEach((it) => add(it.id, it.unit * it.qty)))
+  const top = [...unitsMap.keys()]
+    .filter((id) => meta.has(id))
+    .map((id) => {
+      const p = state.products.find((x) => x.id === id)
+      return { id, name: meta.get(id).name, category: meta.get(id).category, units: unitsMap.get(id), sales: salesMap.get(id) || 0, stock: p ? p.stock : 0, low: p ? p.stock < p.min : false }
     })
     .filter((t) => !cat || t.category === cat)
     .sort((a, b) => b.sales - a.sales)
@@ -167,7 +187,7 @@ export function reportView(state, { period, compare = true, category = 'Todas la
     .map((t, i) => ({ ...t, rank: pad2(i + 1) }))
 
   return {
-    live, tag, hourlySubtitle, summary, hourly, categories, top,
+    live: period === periodToday, tag, hourlySubtitle, summary, hourly, categories, top,
     stats: reportStats(summary, { compare, vsLabel, totalPct, avgPct }),
     collections: { card: summary.card, cash: summary.cash, transfer: summary.transfer, pending: summary.pending, pendingInvoices: summary.pendingCount },
     category: cat,
