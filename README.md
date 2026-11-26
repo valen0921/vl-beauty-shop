@@ -1,67 +1,96 @@
-# V&L Beauty Shop · Vite + React
+# V&L Beauty Shop
 
-Las 5 pantallas del diseño de Figma convertidas a React, CSS y Vite.
+Proyecto de Ingeniería de Software: sistema web para gestionar productos, inventario, ventas/facturación,
+proveedores y reportes de la tienda V&L Beauty Shop.
+
+Hecho con React + Vite en el frontend, un backend propio en Node/Express, y PostgreSQL como base de datos
 
 ## Cómo correrlo
 
-```bash
-npm install
-npm run dev        # http://localhost:5173
-npm run build      # versión de producción en /dist
+### 1. Base de datos
+
+Necesitas tener PostgreSQL instalado. Con pgAdmin (o psql):
+
+```sql
+CREATE USER vlbeauty WITH PASSWORD 'vlbeauty123';
+CREATE DATABASE vlbeauty OWNER vlbeauty;
 ```
 
-## Estructura
+Luego, conectado a la base `vlbeauty`, corre el archivo `schema.sql` para crear las tablas.
+
+Si te sale error de permisos al guardar datos, corre esto también:
+
+```sql
+GRANT USAGE, CREATE ON SCHEMA public TO vlbeauty;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO vlbeauty;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO vlbeauty;
+```
+
+### 2. Backend
+
+```bash
+cd server
+npm install
+npm start
+```
+
+Queda corriendo en `http://localhost:4000`. Por defecto se conecta a la base `vlbeauty` con el usuario
+`vlbeauty` (los datos de conexión están al inicio de `server/index.js`, por si cambias el usuario o la
+contraseña de tu Postgres).
+
+### 3. Frontend
+
+```bash
+npm install
+npm run dev
+```
+
+Con el backend ya corriendo, la app carga y guarda los datos directo en la base de datos. Si por algún
+motivo el backend no está prendido, la app igual abre con datos de ejemplo (pero no se guarda nada hasta
+que vuelvas a prender el backend).
+
+## Estructura del proyecto
 
 ```
 src/
-├── assets/                  # logo, banner e imágenes de productos (cámbialos por los de Figma)
-│   └── products/            # miniaturas por código de producto + index.js
-├── components/
-│   ├── ui/                  # piezas reutilizables: Button, Badge, Card, StatCard, Tabs,
-│   │                        # DataTable, FormField, FilterSelect, Toggle, Callout, etc.
-│   ├── layout/              # Navbar (menú entre pantallas), PageHeader, Footer, Layout
-│   ├── products/            # pantalla Gestión de productos
-│   ├── inventory/           # pantalla Consulta y control de inventario
-│   ├── stock/               # pantalla Actualización automática de stock
-│   ├── sales/               # pantalla Registro de ventas y facturación
-│   └── reports/             # pantalla Generación de reportes
-├── data/                    # datos de ejemplo de cada pantalla (reemplázalos por tu API)
-├── pages/                   # una página por pantalla
-├── styles/                  # variables de color/tipografía, estilos globales y rejillas
-└── utils/                   # formato de moneda y estado de stock
+├── components/     # un componente por carpeta (su .jsx y su .css)
+│   ├── ui/           # botones, tarjetas, tablas, etc. reutilizables
+│   ├── layout/        # navbar y encabezados
+│   ├── products/      # pantalla de Productos
+│   ├── inventory/      # pantalla de Inventario
+│   ├── stock/          # pantalla de Stock automático
+│   ├── sales/           # pantalla de Ventas
+│   └── reports/          # pantalla de Reportes
+├── pages/           # una página por pantalla
+├── store/           # el estado de toda la app
+│   ├── logic.js       # reglas de negocio (ventas, compras, stock, productos...)
+│   ├── selectors.js    # cálculos para reportes y estadísticas, con datos reales
+│   └── StoreProvider.jsx  # conecta el estado con el backend (GET/POST /api/estado)
+└── utils/            # formato de moneda, generación de PDF/Excel, etc.
+server/
+├── index.js         # la API (Express) conectada a PostgreSQL
+└── package.json
+schema.sql            # el esquema de la base de datos
 ```
 
-Cada componente vive en su propia carpeta con su `.jsx` y su `.css`.
-El alias `@` apunta a `src/`, por eso los imports son `@/components/...`.
+El alias `@` apunta a `src/`, por eso los imports se ven como `@/components/...`.
 
 ## Rutas
 
-| Ruta                 | Pantalla                                |
-|----------------------|-----------------------------------------|
-| `/productos`         | Gestión de productos                    |
-| `/inventario`        | Consulta y control de inventario        |
-| `/stock-automatico`  | Actualización automática de stock       |
-| `/ventas`            | Registro de ventas y facturación        |
-| `/reportes`          | Generación de reportes                  |
+| Ruta | Pantalla |
+|---|---|
+| `/productos` | Gestión de productos |
+| `/inventario` | Consulta y control de inventario |
+| `/stock-automatico` | Actualización automática de stock |
+| `/ventas` | Registro de ventas y facturación |
+| `/reportes` | Generación de reportes |
 
-El menú de navegación está en `components/layout/Navbar`; para añadir o renombrar
-una pantalla edita `src/data/navigation.js` y la ruta en `src/App.jsx`.
+## Cómo funciona el guardado
 
-## Colores y tipografías
+Al abrir la app, pide todo el estado al backend (`GET /api/estado`). Cada vez que haces algo (una venta,
+un producto nuevo, una compra, un ajuste de stock...) se manda todo el estado de nuevo al backend
+(`POST /api/estado`), que lo guarda en PostgreSQL. Si algo falla a mitad de camino, no se guarda nada a
+medias — se revierte todo el cambio.
 
-Todo está en `src/styles/variables.css` (rosa `--pink`, superficies, bordes, etc.).
-Fuentes: Cormorant Garamond (títulos) e Inter (texto), cargadas desde Google Fonts en `index.html`.
-
-## Funcionalidad de los botones
-
-Toda la app comparte un estado central (`src/store/`) que se guarda en `localStorage`:
-
-- `store/logic.js` – reglas de negocio puras (ventas, stock, compras, ajustes, productos, proveedores…). Cada función
-  recibe el estado y devuelve `{ ok, state }` o `{ ok:false, error }`. **Es el punto donde conectar tu API.**
-- `store/selectors.js` – cifras derivadas (estadísticas, reportes, alertas).
-- `store/StoreProvider.jsx` – expone las acciones a los componentes (`useStore()`).
-- `components/ui/Feedback` – avisos (`toast`) y confirmaciones (`confirm`) vía `useUI()`.
-- `utils/files.js` y `utils/documents.js` – CSV, impresión/PDF, factura, cierre de caja y reportes.
-
-Las cifras "de toda la tienda" (128 productos, 1.842 unidades, $5.780.250…) son la base de ejemplo; cada acción
-suma o resta sobre ellas. El menú de la tienda (arriba a la derecha) trae «Restablecer datos de ejemplo».
+Los números que se ven en Ventas y Reportes (total del día, ticket promedio, productos más vendidos, etc.)
+se calculan al vuelo a partir de lo que ya está registrado, no hay cifras inventadas mezcladas.
